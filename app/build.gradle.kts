@@ -59,4 +59,32 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation("androidx.navigation:navigation-compose:2.8.0")
+
+    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+
+    // UI
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+
+    // ⚠️ Иконки (ContentCopy, Visibility, VisibilityOff, Upload и т.д.)
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // ViewModel + Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+
+    // Навигация
+    implementation("androidx.navigation:navigation-compose:2.8.3")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.11.0")
+
+    // Корутины
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }

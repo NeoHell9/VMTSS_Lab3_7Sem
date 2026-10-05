@@ -10,6 +10,7 @@ class EntryRepository(private val dao: EntryDao) {
     fun setKey(k: SecretKey) { key = k }
     fun clearKey() { key = null }
     fun hasKey() = key != null
+    fun currentKey(): SecretKey? = key
 
     private fun requireKey(): SecretKey = key ?: error("Key is not set")
 
