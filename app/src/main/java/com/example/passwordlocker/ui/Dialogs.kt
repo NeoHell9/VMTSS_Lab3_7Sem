@@ -101,38 +101,3 @@ fun ImportPasswordDialog(
         }
     )
 }
-
-@Composable
-fun ExportPasswordDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
-) {
-    var pwd by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Пароль для экспорта") },
-        text = {
-            Column {
-                Text("Введите пароль , которым будет зашифрован файл. Он потребуется при импорте.")
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = pwd,
-                    onValueChange = { pwd = it },
-                    label = { Text("Ключ X") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    singleLine = true
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { if (pwd.isNotBlank()) onConfirm(pwd) },
-                enabled = pwd.isNotBlank()
-            ) { Text("Экспорт") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Отмена") }
-        }
-    )
-}

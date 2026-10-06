@@ -47,10 +47,6 @@ fun EntryListScreen(
     var importUri by remember { mutableStateOf<Uri?>(null) }
     var showImportPwdDialog by remember { mutableStateOf(false) }
 
-    // Экспорт
-    var exportUri by remember { mutableStateOf<Uri?>(null) }
-    var showExportPwdDialog by remember { mutableStateOf(false) }
-
     // ---------- SAF ----------
 
     // Создание файла (экспорт)
@@ -58,8 +54,13 @@ fun EntryListScreen(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         if (uri != null) {
-            exportUri = uri
-            showExportPwdDialog = true
+            vm.exportTo(uri) { ok ->
+                Toast.makeText(
+                    ctx,
+                    if (ok) "Экспорт завершён" else "Ошибка экспорта",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -165,28 +166,6 @@ fun EntryListScreen(
                     Toast.makeText(
                         ctx,
                         if (ok) "Пароль успешно изменён" else "Неверный старый пароль",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        )
-    }
-
-    // Диалог пароля для экспорта
-    if (showExportPwdDialog && exportUri != null) {
-        ExportPasswordDialog(
-            onDismiss = {
-                showExportPwdDialog = false
-                exportUri = null
-            },
-            onConfirm = { pwd ->
-                val uri = exportUri!!
-                showExportPwdDialog = false
-                exportUri = null
-                vm.exportTo(uri, pwd) { ok ->
-                    Toast.makeText(
-                        ctx,
-                        if (ok) "Экспорт завершён" else "Ошибка экспорта",
                         Toast.LENGTH_SHORT
                     ).show()
                 }

@@ -111,16 +111,13 @@ class EntryViewModel(app: Application) : AndroidViewModel(app) {
 
     // ----- Экспорт -----
 
-    fun exportTo(
-        uri: Uri,
-        password: String,
-        onResult: (Boolean) -> Unit = {}
-    ) = viewModelScope.launch {
+    fun exportTo(uri: Uri, onResult: (Boolean) -> Unit = {}) = viewModelScope.launch {
         val ctx = getApplication<Application>()
         try {
+            val key = repo.currentKey() ?: error("Репозиторий заблокирован")
             val list = withContext(Dispatchers.IO) { repo.list() }
             withContext(Dispatchers.IO) {
-                ExportManager.export(ctx, uri, list, password)
+                ExportManager.export(ctx, uri, list, key)
             }
             onResult(true)
         } catch (t: Throwable) {
@@ -137,10 +134,20 @@ class EntryViewModel(app: Application) : AndroidViewModel(app) {
     ) = viewModelScope.launch {
         val ctx = getApplication<Application>()
         try {
+            // Соль стабильна — она не меняется при смене мастер-пароля,
+            // поэтому PBKDF2(X, salt) даст тот же ключ, что был при экспорте.
+            val salt = KeyManager.getOrCreateSalt(ctx)
+            val oldKey = CryptoManager.deriveKey(importPassword, salt)
+
+            // 1. Расшифровываем файл старым ключом X
             val plain = withContext(Dispatchers.IO) {
-                ExportManager.readAndDecrypt(ctx, uri, importPassword)
+                ExportManager.readAndDecrypt(ctx, uri, oldKey)
             }
+
+            // 2. Достаём актуальный мастер-ключ Y
             val newKey = repo.currentKey() ?: error("Репозиторий заблокирован")
+
+            // 3. Перешифровываем ключом Y и вставляем в БД
             val rows = plain.map {
                 EntryEntity(
                     title    = CryptoManager.encrypt(it.title, newKey),
