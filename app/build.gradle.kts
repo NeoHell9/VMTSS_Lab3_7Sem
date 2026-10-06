@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+    alias(libs.plugins.kotlin.compose) // или alias(libs.plugins.compose.compiler), если вы добавили оба
+    alias(libs.plugins.devtools.ksp) // Ссылаемся на алиас из libs.versions.toml
 }
 
 android {
@@ -16,7 +16,6 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,6 +37,7 @@ android {
 }
 
 dependencies {
+    // Используем BOM для управления версиями Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -46,29 +46,20 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // Тестовые зависимости
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
+    // Debug зависимости
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+
+    // --- Остальные зависимости ---
     implementation("com.google.code.gson:gson:2.11.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
-    implementation("androidx.navigation:navigation-compose:2.8.0")
-
-    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
-
-    // UI
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-
-    // ⚠️ Иконки (ContentCopy, Visibility, VisibilityOff, Upload и т.д.)
-    implementation("androidx.compose.material:material-icons-extended")
 
     // ViewModel + Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
@@ -77,13 +68,13 @@ dependencies {
     // Навигация
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
-    // Room
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+    // Иконки
+    implementation("androidx.compose.material:material-icons-extended")
 
-    // Gson
-    implementation("com.google.code.gson:gson:2.11.0")
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // Корутины
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
